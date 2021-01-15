@@ -3,6 +3,7 @@ Utilities for improving Chess Visualization.
 <br>
 Compile the utilites ( for now chess_color.cpp ) with
 <br>    <code> g++ utility.cpp -o utility </code>
+<br> replacing name of utility in place of "utility" 
 <br> and paste them in your /usr/local/bin/ with
 <br>    <code> sudo mv utility /usr/local/bin/ </code>
 <br>
