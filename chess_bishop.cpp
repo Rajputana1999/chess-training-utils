@@ -73,7 +73,7 @@ int main(){
 	string mid;
 	while(1){
 		// generate two random squares
-		square source(1, 2), target(1, 8);
+		square source(rand()%8 + 1, rand()%8 +1), target(rand()%8 + 1, rand()%8 +1);
  		
 		// input a string
 		cout << " " << source.value() << " -> " << target.value() << " : ";
