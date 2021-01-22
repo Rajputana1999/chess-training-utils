@@ -43,7 +43,7 @@ int main(){
 		//print accuracy after it all ends
 	}while( value != '\n' && value != 'Q' && value != 'q' );
 	--total_sqrs;
-	std::cout << "\n Total time              : " << total_time/1000.0L << " sec"
+	std::cout << "\n Total square/Total time : " << total_sqrs << "/"<<total_time/1000.0L << " sec"
 		  << "\n Average time per square : " << std::fixed << std::setprecision(3) << ( 1.0L * total_time/1000.0L)/total_sqrs << " sec"
 		  << "\n Accuracy		 : " << ( 1.0L * correct / total_sqrs ) * 100 << " % ";
 	std::cout << '\n';
