@@ -9,12 +9,13 @@
 #include<cstdlib>
 #include<string>
 #include<vector>
+#include<chrono>
+#include<iomanip>
 using namespace std;
 
 int abs( int a ){
 	return a > 0 ? a : -a;
 }
-
 class square{
 	public :
 		int rank, file;
@@ -45,18 +46,18 @@ class square{
 			if( abs(file-target.file) == abs(rank-target.rank) ) return {target};
 
 			int rankDiff = abs( rank - target.rank );
-			square horizontal1(file+rankDiff, target.rank), horizontal2(file-rankDiff, target.rank);
-			int dir = ( target.rank-rank ) >= 0 ? +1:-1;
-			dir  = ( (target.file-file)>0 ? dir:-dir);
+			square horz1(file+rankDiff, target.rank), horz2(file-rankDiff, target.rank);
+			int dir = (rank>=target.rank) ? +1 : -1;
+
 			// vector for 1st intersecting square
-			int direction1 = dir;
-			int magnitude1 = abs( target.file - horizontal1.file)/2;
-			int file1 = (target.file + horizontal1.file)/2;
+			int direction1 = (horz1.file > target.file)? dir : -dir;
+			int magnitude1 = abs( target.file - horz1.file)/2;
+			int file1 = (target.file + horz1.file)/2;
 
 			// vector for 2nd intersecting square
-			int direction2 = (file==target.file ? dir:-dir);
-			int magnitude2 = abs( target.file - horizontal2.file)/2;
-			int file2 = (target.file + horizontal2.file)/2;
+			int direction2 = (horz2.file < target.file)? dir : -dir;
+			int magnitude2 = abs( target.file - horz2.file)/2;
+			int file2 = (target.file + horz2.file)/2;
 
 			return {
 				square( file1 , target.rank + direction1*magnitude1),
@@ -71,6 +72,8 @@ int main(){
 	
 	srand( time(0) );
 	string mid;
+	chrono::steady_clock::time_point start, end; 
+	int total_time=0, total_q=0, correct=0;
 	while(1){
 		// generate two random squares
 		square source, target;
@@ -78,26 +81,38 @@ int main(){
 			source = square(rand()%8 + 1, rand()%8 +1);
 			target = square(rand()%8 + 1, rand()%8 +1);
 		}while((rand()%4) && (source.color()!=target.color()));
+
 		// input a string
 		cout << " " << source.value() << " -> " << target.value() << " : ";
+		start = chrono::steady_clock::now();
 		cin>>mid;
+		end = chrono::steady_clock::now();
 		if(mid=="q")break;
+		total_q++;
+		auto time = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+		total_time+=time;
 
 		// check against correct value , empty string if NP
 		vector<square> answers = source.findIntersection(target);
-		if( answers.size() == 0 ) cout<<" Opposite Colors ";
-		else cout<<" ";
-		for( auto &i: answers) if(i.isvalid())cout<< ":" <<i.value() << " ";
+		cout<<" ";
+		if( answers.size() == 0 ) cout<<"Opp.";
+		int k=0;
+		for( auto &i: answers) if(i.isvalid())k++,cout<< ":" <<i.value() << " ";
+		if( k < 2 ) cout<<"\t";
 		if( (answers.size()==0 && mid=="n")  
 			|| (answers.size() == 1 && mid=="s") 
 			|| (answers.size() > 1 && answers[0].isvalid() && mid==answers[0].value()) 
 			|| (answers.size() > 1 && answers[1].isvalid() && mid==answers[1].value()) 
 		){
-			cout << " Correct\n";
+			cout << " \t\t(+)\t+" << time/1000.0L << " sec\n";
+			correct++;
 		}
 		else {
-			cout<< " Not Correct\n";
+			cout << " \t\t(-)\t+" << time/1000.0L << " sec\n";
 		}
 	}
+	cout	<< "\n Average time     : " << fixed << setprecision(3) << ( 1.0L * total_time/1000.0L)/total_q << " sec"
+		<< "\n Accuracy         : " << ( 1.0L * correct / total_q ) * 100 << " %"
+		<< "\n Total queries    : " << total_q << "\n";
 	return 0;
 }
